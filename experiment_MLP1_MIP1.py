@@ -3,7 +3,7 @@ import time
 import pandas as pd
 import numpy as np
 
-test_set = ['zoo', 'heart', 'lymp', 'apb','tumor_missing','hepatitis_w_missing', 'audio_w_missing', 'votes_w_missing']
+test_set = ['zoo', 'heart', 'lymp', 'apb','tumor_w_missing','hepatitis_w_missing', 'audio_w_missing', 'votes_w_missing']
 
 ks = [2, 5, 10]
 
@@ -35,12 +35,12 @@ for name in test_set:
         bmf.preprocess_input_matrices()
 
         start = time.time()
-        bmf.MLP_solve(max_time=MLP_max_time, display=False, log=True, n_col_add_per_iter=50)
+        bmf.MLP_solve(max_time=MLP_max_time, display=False, log=True)
         end = time.time() - start
 
         bmf.post_process_output_matrices()
-        np.savetxt('./experiments/real_data/MLP/%s_k%s_A_MLP1_time%s_50.txt' % (name, k, MLP_max_time), bmf.MLP_A, fmt='%u')
-        np.savetxt('./experiments/real_data/MLP/%s_k%s_B_MLP1_time%s_50.txt' % (name, k, MLP_max_time), bmf.MLP_B, fmt='%u')
+        np.savetxt('./experiments/real_data/MLP/%s_k%s_A_MLP1_time%s.txt' % (name, k, MLP_max_time), bmf.MLP_A, fmt='%u')
+        np.savetxt('./experiments/real_data/MLP/%s_k%s_B_MLP1_time%s.txt' % (name, k, MLP_max_time), bmf.MLP_B, fmt='%u')
         bmf.preprocess_input_matrices()
 
         MLP_df.loc[('k=%s' % k, 'MLP(1)_obj'), name] = bmf.MLP_model.solution.get_objective_value()
@@ -49,7 +49,7 @@ for name in test_set:
         MLP_df.loc[('k=%s' % k, 'MLP(1)_time'), name] = end
 
         MLP_df.to_csv('./experiments/real_data/MLP1_time_%s_zoo.csv' % (MLP_max_time))
-        bmf.MLP_log.to_csv('./experiments/real_data/MLP/%s_k%s_MLP1_time%s_50.csv' % (name, k, MLP_max_time))
+        bmf.MLP_log.to_csv('./experiments/real_data/MLP/%s_k%s_MLP1_time%s.csv' % (name, k, MLP_max_time))
 
         print(MLP_df)
         print('\n\n\n Done with MLP on %s with k=%s \n\n\n' % (name, k))
@@ -59,8 +59,8 @@ for name in test_set:
         end = time.time() - start
         bmf.post_process_output_matrices()
 
-        np.savetxt('./experiments/real_data/MIP/%s_k%s_A_MLP1_time%s_MIP_time%s_50.txt' % (name, k, MLP_max_time, MIP_max_time), bmf.A, fmt='%u')
-        np.savetxt('./experiments/real_data/MIP/%s_k%s_B_MLP1_time%s_MIP_time%s_50.txt' % (name, k, MLP_max_time, MIP_max_time), bmf.A, fmt='%u')
+        np.savetxt('./experiments/real_data/MIP/%s_k%s_A_MLP1_time%s_MIP_time%s.txt' % (name, k, MLP_max_time, MIP_max_time), bmf.A, fmt='%u')
+        np.savetxt('./experiments/real_data/MIP/%s_k%s_B_MLP1_time%s_MIP_time%s.txt' % (name, k, MLP_max_time, MIP_max_time), bmf.A, fmt='%u')
 
         MIP_df.loc[('k=%s' % k, 'MIP(1)_obj'), name] = bmf.MIP_model.solution.get_objective_value()
         MIP_df.loc[('k=%s' % k, 'MIP(1)_gap'), name] = 100 * \
@@ -74,7 +74,7 @@ for name in test_set:
 
         print(MIP_df)
 
-        MIP_df.to_csv('./experiments/real_data/MLP1_time%s_MIP_time%s_zoo.csv' % (MLP_max_time, MIP_max_time))
+        MIP_df.to_csv('./experiments/real_data/MLP1_time%s_MIP_time%s.csv' % (MLP_max_time, MIP_max_time))
 
 
 
