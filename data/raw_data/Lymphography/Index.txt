@@ -1,0 +1,5 @@
+Index of lymphography
+
+02 Dec 1996      129 Index
+19 Apr 1990     5624 lymphography.data
+30 May 1989     3236 lymphography.names
