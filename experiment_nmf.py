@@ -27,7 +27,7 @@ def from_NMF_to_BMF(A_NMF,B_NMF, threshold=0.5):
 
 test_set = ['zoo', 'heart','lymp','apb']#,'tumor_w_missing','hepatitis_w_missing', 'audio_w_missing', 'votes_w_missing']
 ks = [2, 5, 10]
-df_index = pd.MultiIndex.from_product([['error', 'time', 'threshold'], ['k=%s' %k for k in ks]])
+df_index = pd.MultiIndex.from_product([['error', 'time', 'threshold', 'init'], ['k=%s' %k for k in ks]])
 df = pd.DataFrame(index=df_index, columns=test_set)
 
 for name in test_set:
@@ -38,23 +38,29 @@ for name in test_set:
         #initialise a large error value, just to be able to compare later and record best
         df.loc[('error', 'k=%s' % k), name] = n*m
 
-        start = time.time()
-        A_NMF, B_NMF, _ = non_negative_factorization(X, n_components=k)
-        end = time.time()
-        t = end - start
+        #try all possible NMF initalisations
+        for init_NMF in ('nndsvda', 'nndsvd', 'nndsvdar', 'random'):
 
-        for threshold in np.arange(0.1, 1, 0.1):
             start = time.time()
-            A, B = from_NMF_to_BMF(A_NMF, B_NMF, threshold)
+            A_NMF, B_NMF, _ = non_negative_factorization(X, n_components=k, init=init_NMF)
             end = time.time()
+            t = end - start
 
-            error = np.sum(np.abs(X - boolean_matrix_product(A, B)))
+            #try a lot of thresholds to get BMF
+            for threshold in np.arange(0.1, 1, 0.1):
+                start = time.time()
+                A, B = from_NMF_to_BMF(A_NMF, B_NMF, threshold)
+                end = time.time()
 
-            if error < df.loc[('error', 'k=%s' % k), name]:
+                error = np.sum(np.abs(X - boolean_matrix_product(A, B)))
 
-                df.loc[('error', 'k=%s' % k), name] = error
-                df.loc[('time', 'k=%s' % k), name] = t + end - start
-                df.loc[('threshold', 'k=%s' % k), name] = threshold
+                #only save if current BMF is better than previous best
+                if error < df.loc[('error', 'k=%s' % k), name]:
+
+                    df.loc[('error', 'k=%s' % k), name] = error
+                    df.loc[('time', 'k=%s' % k), name] = t + end - start
+                    df.loc[('threshold', 'k=%s' % k), name] = threshold
+                    df.loc[('init', 'k=%s' % k), name] = init_NMF
 
         df.to_csv('./experiments/real_data/nmf_scaled.csv')
 
