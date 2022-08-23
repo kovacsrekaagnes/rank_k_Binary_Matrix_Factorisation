@@ -62,7 +62,7 @@ for name in test_set:
                     df.loc[('threshold', 'k=%s' % k), name] = threshold
                     df.loc[('init', 'k=%s' % k), name] = init_NMF
 
-        df.to_csv('./experiments/real_data/nmf_scaled.csv')
+        df.to_csv('./experiments/real_data/nmf.csv')
 
         print('\n\nDone with %s k=%s \n\n' %(name,k))
 
