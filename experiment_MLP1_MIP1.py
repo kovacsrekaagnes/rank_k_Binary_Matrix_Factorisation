@@ -28,8 +28,8 @@ for name in test_set:
     X = np.loadtxt('./data/%s.txt' % name, dtype=float)
 
     for k in ks:
-        A_greedy = np.loadtxt('./k-greedy/%s_%s_A.txt' % (name, k), dtype=int)
-        B_greedy = np.loadtxt('./k-greedy/%s_%s_B.txt' % (name, k), dtype=int)
+        A_greedy = np.loadtxt('./experiments/real_data/k-greedy/%s_%s_A.txt' % (name, k), dtype=int)
+        B_greedy = np.loadtxt('./experiments/real_data/k-greedy/%s_%s_B.txt' % (name, k), dtype=int)
 
         bmf = BMF_via_CG(X, k, A_init=A_greedy, B_init=B_greedy)
         bmf.preprocess_input_matrices()
@@ -48,7 +48,7 @@ for name in test_set:
         MLP_df.loc[('k=%s' % k, 'MLP(1)_dual'), name] = bmf.best_dual_bound
         MLP_df.loc[('k=%s' % k, 'MLP(1)_time'), name] = end
 
-        MLP_df.to_csv('./experiments/real_data/MLP1_time_%s_zoo.csv' % (MLP_max_time))
+        MLP_df.to_csv('./experiments/real_data/MLP1_time_%s.csv' % (MLP_max_time))
         bmf.MLP_log.to_csv('./experiments/real_data/MLP/%s_k%s_MLP1_time%s.csv' % (name, k, MLP_max_time))
 
         print(MLP_df)
